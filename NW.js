@@ -1,7 +1,7 @@
 let Pubkey ='4ebd42636ce59d5ecfd8cb0b36a7f3c4';
 let Prikey='9906ae1c1796f216db80ef7ad57c70b3abf6f3b9';
 let url= 'https://gateway.marvel.com:443/v1/public/characters'
-console.log(Prikey,Pubkey);
+var content = document.getElementById('content');
 
 function marvelKey(privateKey, publicKey) {
     var ts = new Date().getTime();
@@ -13,8 +13,6 @@ function marvelKey(privateKey, publicKey) {
 
 let key = marvelKey(Prikey,Pubkey);
 let furl = url +'?' + key;
-console.log(furl);
-
 
 function sendGetRequest(url, callback) {
     var request = new XMLHttpRequest();
@@ -28,24 +26,71 @@ function sendGetRequest(url, callback) {
     }
   }
 
-var content = document.getElementById('content');
-console.log(content);
+function clear(){
+  content.innerHTML="";
+}
+function comiccreate(comicitem,id){
+    for(let k=0;k<comicitem;k++){
+        let comicname=comicitem.name;
+        let urlcomic=comicitem.resourceURI;
+        let comiccontain =document.getElementById(`contain${id}`);
+        let comichtml= `<a href='${urlcomic}'>${comicname}</a>'`;
+        comiccontain.insertAdjacentHTML('beforeend',comichtml);
+    }
+}
+
+function render(response){
+  var heros = response.data.results;
+    for(var i=0;i<heros.length;i++){
+      var hero= heros[i];
+      var id =hero.id;
+      var des= hero.description;
+      var comicitem=hero.comics.items;
+      if(des.length==0){
+        des='none';
+      }
+      var name =hero.name;
+      var imgsrc= hero.thumbnail.path+'.'+hero.thumbnail.extension;
+      var comic =hero.comics.available;
+
+      var addhtml=`<div id='${id}' class='boxx'>`+
+      "<img class='imgg' src='"+ imgsrc + "'>"+
+      '<h2 onclick=``>' + name + '</h2>'+
+      '<h3>Comic:'+ comic +'</h3></div>';
+
+      var detailhtml=`<div class='detail' id='${id}'>
+      <img class='detailimg' src='${imgsrc}'>
+      <h3>${name}</h3>
+      <h2>${des}</h2>
+      <div id='contain${id}'>Comic:</div>
+      </div>`
+      content.insertAdjacentHTML("beforeend",addhtml);
+      content.insertAdjacentHTML('beforeend',detailhtml);
+      comiccreate(comicitem,id);
+    }
+}
+
+function detail(response){
+      
+}
+function search(){
+  var search=document.getElementById('input');
+  let key1 = marvelKey(Prikey,Pubkey);
+  var full=`${url}?${key1}&nameStartsWith=${search.value}`
+  console.log(full);
+  sendGetRequest(full,function(response){
+    if(response.data.results.length==0){
+      clear();
+      content.insertAdjacentHTML("beforeend",`<div id="notfound">NOT FOUND</div>`);
+    }
+    else{
+      clear();
+      render(response);
+    }
+  })
+}
 
 sendGetRequest(furl,function(response){
-    var hero = response.data.results;
-    for( i=0;i<hero.length;i++){
-        console.log(response);
-        var hero= hero[i];
-        var name =hero.name;
-        var imgsrc= hero.thumbnail.path+'.'+hero.thumbnail.extension;
-        var comic =hero.comics.available;
-        var addhtml="<div>"+
-        "<img src='"+ imgsrc + "'>"+
-        '<h2>' + name + '</h2>'+
-        '<h3>Comic:'+ comic +'</h3></div>';
-        console.log(addhtml);
-        content.insertAdjacentHTML("beforeend",addhtml);
-    }
+    render(response);
 })
-
 
