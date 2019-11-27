@@ -9,7 +9,7 @@
     
 }
 .boxx{
-    display: block
+    display: block;
     align-content: center;
     justify-content: center;
     height: auto;
@@ -65,4 +65,10 @@ h3{
     display: flex;
     margin-top: 10%; 
     
+}
+.detail{
+    display: none;
+}
+.boxx>h2:hover{
+    color: darkgray;
 }

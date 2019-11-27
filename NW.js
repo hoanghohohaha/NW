@@ -29,15 +29,6 @@ function sendGetRequest(url, callback) {
 function clear(){
   content.innerHTML="";
 }
-function comiccreate(comicitem,id){
-    for(let k=0;k<comicitem;k++){
-        let comicname=comicitem.name;
-        let urlcomic=comicitem.resourceURI;
-        let comiccontain =document.getElementById(`contain${id}`);
-        let comichtml= `<a href='${urlcomic}'>${comicname}</a>'`;
-        comiccontain.insertAdjacentHTML('beforeend',comichtml);
-    }
-}
 
 function render(response){
   var heros = response.data.results;
@@ -45,7 +36,6 @@ function render(response){
       var hero= heros[i];
       var id =hero.id;
       var des= hero.description;
-      var comicitem=hero.comics.items;
       if(des.length==0){
         des='none';
       }
@@ -53,26 +43,16 @@ function render(response){
       var imgsrc= hero.thumbnail.path+'.'+hero.thumbnail.extension;
       var comic =hero.comics.available;
 
-      var addhtml=`<div id='${id}' class='boxx'>`+
+      var addhtml=`<div class='boxx'>`+
       "<img class='imgg' src='"+ imgsrc + "'>"+
-      '<h2 onclick=``>' + name + '</h2>'+
+      `<h2 id=${id} class='namecontain' name='${name}'>`+ name + '</h2>'+
       '<h3>Comic:'+ comic +'</h3></div>';
 
-      var detailhtml=`<div class='detail' id='${id}'>
-      <img class='detailimg' src='${imgsrc}'>
-      <h3>${name}</h3>
-      <h2>${des}</h2>
-      <div id='contain${id}'>Comic:</div>
-      </div>`
       content.insertAdjacentHTML("beforeend",addhtml);
-      content.insertAdjacentHTML('beforeend',detailhtml);
-      comiccreate(comicitem,id);
     }
 }
 
-function detail(response){
-      
-}
+
 function search(){
   var search=document.getElementById('input');
   let key1 = marvelKey(Prikey,Pubkey);
@@ -93,4 +73,17 @@ function search(){
 sendGetRequest(furl,function(response){
     render(response);
 })
+var h2list= document.getElementsByClassName('boxx');
+console.log(h2list);
+// console.log(h2list[18]);
+let temp = Array.from(h2list);
+console.log(temp);
 
+for(let o=0;o< 20;o++){
+    var btn= h2list[o];
+    console.log(btn);
+    
+    // // btn.addEventListener('click',function(p){
+    // //   console.log(p.target);
+    // })
+}
