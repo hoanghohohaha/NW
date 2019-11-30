@@ -13,6 +13,24 @@ function marvelKey(privateKey, publicKey) {
 
 let key = marvelKey(Prikey,Pubkey);
 let furl = url +'?' + key;
+console.log(furl);
+
+function detail(){
+  var h2list= document.getElementsByTagName('h2');
+  for(let o=0;o<h2list.length;o++){
+  var btn= h2list[o];
+  btn.addEventListener('click',function(e){
+    var btn=e.target;
+    console.log(btn);
+    var idd=btn.getAttribute('id');
+    console.log(idd);
+    moveTo(0,0);
+    document.getElementById(`content`).style.display='none';
+    document.getElementById(`detail${idd}`).style.display='flex';
+    document.getElementById('searchbox').style.display='none';
+  });
+}
+}
 
 function sendGetRequest(url, callback) {
     var request = new XMLHttpRequest();
@@ -40,15 +58,39 @@ function render(response){
         des='none';
       }
       var name =hero.name;
+      console.log(name);
+      
       var imgsrc= hero.thumbnail.path+'.'+hero.thumbnail.extension;
       var comic =hero.comics.available;
-
+      var items=hero.comics.items;
+      console.log(items)
       var addhtml=`<div class='boxx'>`+
       "<img class='imgg' src='"+ imgsrc + "'>"+
       `<h2 id=${id} class='namecontain' name='${name}'>`+ name + '</h2>'+
       '<h3>Comic:'+ comic +'</h3></div>';
 
+      var detailhtml=`<div id='detail${id}' class='detail'>
+                      <img class='img' src='${imgsrc}'>
+                      <h2>${name}</h2>
+                      <h3>Description<br>${des}</h3>
+                      <h3>Comic</h3>
+                      <div class=comic>`;
+      var adddetailhtml='';
+      if(items.length>0){
+        for(let u=0;u<items.length;u++){
+          var item=items[u];
+          var detailname=item.name;
+          var detailurl=item.resourceURI;
+            adddetailhtml=adddetailhtml + `<a href='${detailurl}'>${detailname}</a>`;
+            
+      }}
+      else{
+        adddetailhtml="None"
+      }
+      detailhtml=detailhtml+adddetailhtml+ '</div></div>'
+      console.log(detailhtml);
       content.insertAdjacentHTML("beforeend",addhtml);
+      content.insertAdjacentHTML("afterend",detailhtml);
     }
 }
 
@@ -66,24 +108,13 @@ function search(){
     else{
       clear();
       render(response);
+      detail();
     }
   })
 }
 
 sendGetRequest(furl,function(response){
     render(response);
+    detail();
 })
-var h2list= document.getElementsByClassName('boxx');
-console.log(h2list);
-// console.log(h2list[18]);
-let temp = Array.from(h2list);
-console.log(temp);
 
-for(let o=0;o< 20;o++){
-    var btn= h2list[o];
-    console.log(btn);
-    
-    // // btn.addEventListener('click',function(p){
-    // //   console.log(p.target);
-    // })
-}

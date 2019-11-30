@@ -68,7 +68,42 @@ h3{
 }
 .detail{
     display: none;
+    flex-flow: column nowrap;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+}
+a{  
+    display: inline-block;
+    text-decoration:none;
+    padding: 5px;
+    margin-left: 5px;
+    margin-right:5px;
+    margin-top: 5px;
+    color: white;
+    background-color:black;
+    font-family: 'Courier New', Courier, monospace;
+    border: white 1px;
+    border-style: solid;
+}
+.comic{
+    display: block;
+    padding: 10px;
+    font-size: larger;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    padding:10px 10px;
+}
+.img{
+    width: 50%;
+    height: auto;
+    margin-left: 50%;
+    transform: translate(-50%);
+    border-radius:100%;
 }
 .boxx>h2:hover{
+    color: darkgray;
+}
+a:hover{
     color: darkgray;
 }
