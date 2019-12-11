@@ -13,7 +13,6 @@ function marvelKey(privateKey, publicKey) {
 
 let key = marvelKey(Prikey,Pubkey);
 let furl = url +'?' + key;
-console.log(furl);
 
 function detail(){
   var h2list= document.getElementsByTagName('h2');
@@ -32,15 +31,15 @@ function detail(){
 }
 }
 
-function sendGetRequest(url, callback) {
+ function sendGetRequest(url, callback) {
     var request = new XMLHttpRequest();
-    request.open("GET", url);
-    request.send();
-    request.onreadystatechange = function(e) {
-      if(e.currentTarget &&  e.currentTarget.readyState == 4 &&
-        e.currentTarget.status == 200) {
-          callback(JSON.parse(e.currentTarget.responseText));
-        }
+     request.open("GET", url);
+     request.send();
+     request.onreadystatechange = function(e) {
+          if(e.currentTarget &&  e.currentTarget.readyState == 4 && e.currentTarget.status == 200) 
+          {
+            callback(JSON.parse(e.currentTarget.responseText));
+          }
     }
   }
 
@@ -48,7 +47,7 @@ function clear(){
   content.innerHTML="";
 }
 
-function render(response){
+async function render(response,key){
   var heros = response.data.results;
     for(var i=0;i<heros.length;i++){
       var hero= heros[i];
@@ -58,12 +57,10 @@ function render(response){
         des='none';
       }
       var name =hero.name;
-      console.log(name);
-      
       var imgsrc= hero.thumbnail.path+'.'+hero.thumbnail.extension;
       var comic =hero.comics.available;
       var items=hero.comics.items;
-      console.log(items)
+      
       var addhtml=`<div class='boxx'>`+
       "<img class='imgg' src='"+ imgsrc + "'>"+
       `<h2 id=${id} class='namecontain' name='${name}'>`+ name + '</h2>'+
@@ -74,23 +71,37 @@ function render(response){
                       <h2>${name}</h2>
                       <h3>Description<br>${des}</h3>
                       <h3>Comic</h3>
-                      <div class=comic>`;
+                      <div class='comic' id='comic${id}'></div></div>`;
       var adddetailhtml='';
+      content.insertAdjacentHTML("beforeend",addhtml);
+      content.insertAdjacentHTML("afterend",detailhtml);
       if(items.length>0){
         for(let u=0;u<items.length;u++){
           var item=items[u];
           var detailname=item.name;
           var detailurl=item.resourceURI;
-            adddetailhtml=adddetailhtml + `<a href='${detailurl}'>${detailname}</a>`;
+          var detailfurl=detailurl+`?${key}`;
+          // sendGetRequest(detailfurl, function(comicdata){
+          // //   return await comicdata;
+          // // });
+          // // console.log(comicdata);
+          
+          //    var comicurl= comicdata.data.results[0].urls[0].url;
+               comic=  document.getElementById(`comic${id}`);
+               console.log(`comic${id}`);
+               console.log(comic);
+               
+               adddetailhtml= adddetailhtml + `<a href='${detailfurl}'>${detailname}</a>`;
+               comic.insertAdjacentHTML('beforeend',adddetailhtml);
+      
+               
+          }
             
-      }}
-      else{
-        adddetailhtml="None"
+            
       }
-      detailhtml=detailhtml+adddetailhtml+ '</div></div>'
-      console.log(detailhtml);
-      content.insertAdjacentHTML("beforeend",addhtml);
-      content.insertAdjacentHTML("afterend",detailhtml);
+      else{
+        adddetailhtml="None";
+      }
     }
 }
 
@@ -107,14 +118,28 @@ function search(){
     }
     else{
       clear();
-      render(response);
+      render(response,key);
       detail();
     }
   })
 }
 
 sendGetRequest(furl,function(response){
-    render(response);
+    render(response,key);
     detail();
 })
 
+var back=document.getElementById('backbtn');
+back.addEventListener('click',function(e){
+  var backbtn=e.target;
+  console.log(backbtn);
+  var h2list= document.getElementsByTagName('h2');
+  for(let o=0;o<h2list.length;o++){
+    var idcheck=h2list[o].getAttribute('id');
+    if(document.getElementById(`detail${idcheck}`).style.display != 'none'){
+      document.getElementById(`detail${idcheck}`).style.display = 'none';
+    }
+    document.getElementById(`content`).style.display='flex';
+    document.getElementById('searchbox').style.display='flex';
+  }
+});
