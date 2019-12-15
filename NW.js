@@ -1,8 +1,8 @@
-let Pubkey ='4ebd42636ce59d5ecfd8cb0b36a7f3c4';
-let Prikey='9906ae1c1796f216db80ef7ad57c70b3abf6f3b9';
+let Pubkey ='d444602dec7b13b4e2827eddfc7107e4';
+let Prikey='8b6935650e04934eb56dd30aee4fe89cbee72ac6';
 let url= 'https://gateway.marvel.com:443/v1/public/characters'
 var content = document.getElementById('content');
-
+var detailfurl='';
 function marvelKey(privateKey, publicKey) {
     var ts = new Date().getTime();
     var hash = MD5(ts + privateKey + publicKey).toString();
@@ -13,6 +13,8 @@ function marvelKey(privateKey, publicKey) {
 
 let key = marvelKey(Prikey,Pubkey);
 let furl = url +'?' + key;
+console.log(furl);
+
 
 function detail(){
   var h2list= document.getElementsByTagName('h2');
@@ -23,7 +25,6 @@ function detail(){
     console.log(btn);
     var idd=btn.getAttribute('id');
     console.log(idd);
-    moveTo(0,0);
     document.getElementById(`content`).style.display='none';
     document.getElementById(`detail${idd}`).style.display='flex';
     document.getElementById('searchbox').style.display='none';
@@ -47,7 +48,7 @@ function clear(){
   content.innerHTML="";
 }
 
-async function render(response,key){
+function render(response,key){
   var heros = response.data.results;
     for(var i=0;i<heros.length;i++){
       var hero= heros[i];
@@ -67,11 +68,11 @@ async function render(response,key){
       '<h3>Comic:'+ comic +'</h3></div>';
 
       var detailhtml=`<div id='detail${id}' class='detail'>
-                      <img class='img' src='${imgsrc}'>
-                      <h2>${name}</h2>
-                      <h3>Description<br>${des}</h3>
-                      <h3>Comic</h3>
-                      <div class='comic' id='comic${id}'></div></div>`;
+                       <img class='img' src='${imgsrc}'>
+                       <h2>${name}</h2>
+                       <h3>Description<br>${des}</h3>
+                       <h3>Comic</h3>
+                       <div class='comic' id='comic${id}'></div></div>`;
       var adddetailhtml='';
       content.insertAdjacentHTML("beforeend",addhtml);
       content.insertAdjacentHTML("afterend",detailhtml);
@@ -80,29 +81,33 @@ async function render(response,key){
           var item=items[u];
           var detailname=item.name;
           var detailurl=item.resourceURI;
-          var detailfurl=detailurl+`?${key}`;
-          // sendGetRequest(detailfurl, function(comicdata){
-          // //   return await comicdata;
-          // // });
-          // // console.log(comicdata);
-          
-          //    var comicurl= comicdata.data.results[0].urls[0].url;
-               comic=  document.getElementById(`comic${id}`);
-               console.log(`comic${id}`);
-               console.log(comic);
-               
-               adddetailhtml= adddetailhtml + `<a href='${detailfurl}'>${detailname}</a>`;
+          detailfurl=detailurl+`?${key}`;
+        //   fetch(detailfurl).then(result => {
+        //     // console.log(detailfurl);
+        //     return result.json();
+        //     }).then(result => {
+        //       console.log('done');
+        //       console.log(result.data.results[0].urls[0].url);
+        //       comicdata= result.data.results[0].urls[0].url;
+        //       return comicdata;
+        // });
+        //        comic= document.getElementById(`comic${id}`);
+               comic= document.getElementById(`comic${id}`);
+               adddetailhtml= adddetailhtml + `<a onclick="detailfunc(\'${detailfurl}\');" >${detailname}</a>`;
                comic.insertAdjacentHTML('beforeend',adddetailhtml);
-      
-               
           }
-            
-            
       }
       else{
         adddetailhtml="None";
       }
     }
+  }
+
+function detailfunc(detailfurl){
+  sendGetRequest(detailfurl,function(result) {
+    window.open(result.data.results[0].urls[0].url);
+  });
+
 }
 
 
